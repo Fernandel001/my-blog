@@ -13,8 +13,9 @@
     {{-- ── Liste des posts ── --}}
     @forelse ($posts as $post)
         <article id="post-{{ $post->id }}"
-                 class="post-card-hover mb-8 bg-[#191f31] border border-[#454653] rounded-xl
-                        overflow-hidden transition-all duration-300">
+                 class="post-card-hover mb-8 rounded-xl overflow-hidden transition-all duration-300"
+                 style="background-color: var(--color-surface-container);
+                        border: 1px solid var(--color-outline-variant)">
 
             {{-- ── En-tête du post ── --}}
             <div class="flex items-center justify-between px-6 pt-5 pb-3">
@@ -25,8 +26,9 @@
                         A
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-sm font-semibold text-[#dce1fb]">Admin</span>
-                        <span class="text-[11px] font-[JetBrains_Mono] tracking-widest text-[#908f9e] uppercase">
+                        <span class="text-sm font-semibold" style="color: var(--color-on-surface)">Admin</span>
+                        <span class="text-[11px] font-[JetBrains_Mono] tracking-widest uppercase"
+                              style="color: var(--color-outline)">
                             {{ $post->created_at->diffForHumans() }}
                         </span>
                     </div>
@@ -35,7 +37,8 @@
 
             {{-- ── Texte ── --}}
             @if ($post->content)
-                <div class="px-6 pb-4 text-[#dce1fb] text-[17px] leading-relaxed whitespace-pre-line">
+                <div class="px-6 pb-4 text-[17px] leading-relaxed whitespace-pre-line"
+                     style="color: var(--color-on-surface)">
                     {{ $post->content }}
                 </div>
             @endif
@@ -50,7 +53,8 @@
             @endphp
 
             @if ($post->images->count() === 1)
-                <div class="mx-6 mb-4 rounded-xl overflow-hidden border border-[#454653]">
+                <div class="mx-6 mb-4 rounded-xl overflow-hidden"
+                     style="border: 1px solid var(--color-outline-variant)">
                     @if ($imageUrl($post->images->first()->image_path) === null)
                         <div class="w-full h-32 bg-[#151b2d] flex items-center justify-center gap-2 text-[#908f9e]">
                             <span class="material-symbols-outlined animate-spin text-xl">progress_activity</span>
@@ -66,7 +70,9 @@
             @elseif ($post->images->count() > 1)
                 <div class="relative mx-6 mb-4">
                     <div class="carousel flex overflow-x-auto snap-x snap-mandatory scrollbar-none
-                                rounded-xl border border-[#454653] bg-[#151b2d]">
+                                rounded-xl"
+                         style="border: 1px solid var(--color-outline-variant);
+                                background-color: var(--color-surface-container-low)">
                         @foreach ($post->images as $image)
                             <div class="snap-center shrink-0 w-full">
                                 @if ($imageUrl($image->image_path) === null)
@@ -96,10 +102,11 @@
             @endif
 
             {{-- ── Séparateur + section commentaires ── --}}
-            <div class="border-t border-[#454653]">
+            <div style="border-top: 1px solid var(--color-outline-variant)">
 
                 {{-- Barre d'interactions : Like --}}
-                <div class="flex items-center gap-6 px-6 py-3 border-b border-[#454653]/50">
+                <div class="flex items-center gap-6 px-6 py-3"
+                     style="border-bottom: 1px solid color-mix(in srgb, var(--color-outline-variant) 50%, transparent)">
                     @auth
                         @php $userLiked = $post->likes->contains(auth()->id()); @endphp
                         <form method="POST" action="{{ route('posts.like', $post) }}">
@@ -129,7 +136,8 @@
 
                 {{-- Compteur --}}
                 <div class="px-6 pt-4 pb-2">
-                    <span class="text-[11px] font-[JetBrains_Mono] tracking-widest text-[#908f9e] uppercase">
+                    <span class="text-[11px] font-[JetBrains_Mono] tracking-widest uppercase"
+                          style="color: var(--color-outline)">
                         {{ $post->comments->count() }}
                         {{ $post->comments->count() === 1 ? 'commentaire' : 'commentaires' }}
                     </span>
@@ -140,21 +148,25 @@
                     <div class="px-6 pb-4 space-y-4">
                         @foreach ($post->comments as $comment)
                             <div class="flex gap-3">
-                                <div class="shrink-0 w-8 h-8 rounded-full bg-[#23293c] flex items-center
-                                            justify-center text-xs font-bold font-[JetBrains_Mono]
-                                            text-[#bdc2ff] uppercase">
+                                <div class="shrink-0 w-8 h-8 rounded-full flex items-center
+                                            justify-center text-xs font-bold font-[JetBrains_Mono] uppercase"
+                                     style="background-color: var(--color-surface-container-high);
+                                            color: var(--color-primary)">
                                     {{ mb_substr($comment->user->name, 0, 1) }}
                                 </div>
                                 <div class="flex-1">
                                     <div class="flex items-baseline gap-2">
-                                        <span class="text-sm font-semibold text-[#dce1fb]">
+                                        <span class="text-sm font-semibold"
+                                              style="color: var(--color-on-surface)">
                                             {{ $comment->user->name }}
                                         </span>
-                                        <span class="text-[10px] font-[JetBrains_Mono] tracking-wider text-[#908f9e] uppercase">
+                                        <span class="text-[10px] font-[JetBrains_Mono] tracking-wider uppercase"
+                                              style="color: var(--color-outline)">
                                             {{ $comment->created_at->diffForHumans() }}
                                         </span>
                                     </div>
-                                    <p class="mt-0.5 text-sm text-[#c6c5d5] leading-relaxed">
+                                    <p class="mt-0.5 text-sm leading-relaxed"
+                                       style="color: var(--color-on-surface-variant)">
                                         {{ $comment->content }}
                                     </p>
                                 </div>
@@ -165,10 +177,13 @@
 
                 {{-- Formulaire commentaire — visible uniquement si connecté --}}
                 @auth
-                    <div class="bg-[#151b2d]/50 border-t border-[#454653]/50 px-6 py-4">
+                    <div class="border-t px-6 py-4"
+                         style="background-color: color-mix(in srgb, var(--color-surface-container-low) 50%, transparent);
+                                border-color: color-mix(in srgb, var(--color-outline-variant) 50%, transparent)">
 
                         @if ($errors->any() && old('post_id') == $post->id)
-                            <ul class="mb-3 text-xs text-[#ffb4ab] font-[JetBrains_Mono] space-y-1">
+                            <ul class="mb-3 text-xs font-[JetBrains_Mono] space-y-1"
+                                style="color: var(--color-error)">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -185,10 +200,14 @@
                                       rows="2"
                                       placeholder="Ajouter un commentaire…"
                                       required
-                                      class="w-full bg-[#0c1324] border border-[#454653] rounded-xl
-                                             px-4 py-2.5 text-sm text-[#dce1fb] placeholder-[#908f9e]
-                                             focus:outline-none focus:border-[#818cf8] focus:ring-1
-                                             focus:ring-[#818cf8]/50 transition-all resize-none">{{ old('content') }}</textarea>
+                                      class="w-full rounded-xl px-4 py-2.5 text-sm
+                                             focus:outline-none focus:ring-1 transition-all resize-none"
+                                      style="background-color: var(--color-surface-container-lowest);
+                                             border: 1px solid var(--color-outline-variant);
+                                             color: var(--color-on-surface);
+                                             --placeholder-color: var(--color-outline)"
+                                      onfocus="this.style.borderColor='var(--color-primary-container)'"
+                                      onblur="this.style.borderColor='var(--color-outline-variant)'">{{ old('content') }}</textarea>
 
                             <div class="flex justify-end">
                                 <button type="submit"
@@ -201,10 +220,14 @@
                         </form>
                     </div>
                 @else
-                    {{-- Invitation à se connecter --}}
-                    <div class="bg-[#151b2d]/50 border-t border-[#454653]/50 px-6 py-4">
-                        <p class="text-xs font-[JetBrains_Mono] tracking-wider text-[#908f9e] uppercase">
-                            <a href="{{ route('login') }}" class="text-[#bdc2ff] hover:underline underline-offset-4">
+                    <div class="border-t px-6 py-4"
+                         style="background-color: color-mix(in srgb, var(--color-surface-container-low) 50%, transparent);
+                                border-color: color-mix(in srgb, var(--color-outline-variant) 50%, transparent)">
+                        <p class="text-xs font-[JetBrains_Mono] tracking-wider uppercase"
+                           style="color: var(--color-outline)">
+                            <a href="{{ route('login') }}"
+                               style="color: var(--color-primary)"
+                               class="hover:underline underline-offset-4">
                                 Connectez-vous
                             </a>
                             pour laisser un commentaire.

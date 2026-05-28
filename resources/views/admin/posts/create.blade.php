@@ -6,10 +6,12 @@
 
     {{-- En-tête --}}
     <div class="flex items-center justify-between mb-8">
-        <h2 class="font-[Geist] text-2xl font-bold tracking-tight text-[#bdc2ff]">
+        <h2 class="font-[Geist] text-2xl font-bold tracking-tight"
+            style="color: var(--color-primary)">
             Nouveau post
         </h2>
-        <span class="font-[JetBrains_Mono] text-[10px] tracking-widest text-[#908f9e] uppercase">
+        <span class="font-[JetBrains_Mono] text-[10px] tracking-widest uppercase"
+              style="color: var(--color-outline)">
             Admin Console
         </span>
     </div>
@@ -46,36 +48,37 @@
                       rows="6"
                       placeholder="Quoi de neuf ?"
                       autofocus
-                      class="w-full bg-transparent border-none focus:ring-0 focus:outline-none
-                             text-[17px] text-[#dce1fb] placeholder-[#454653] leading-relaxed
-                             resize-none p-0">{{ old('content') }}</textarea>
+                      class="w-full border-none focus:ring-0 focus:outline-none
+                             text-[17px] leading-relaxed resize-none p-0"
+                      style="background: transparent;
+                             color: var(--color-on-surface);
+                             caret-color: var(--color-primary)">{{ old('content') }}</textarea>
         </div>
 
         {{-- ── Zone de dépôt d'images ── --}}
         <div id="drop-zone"
              class="drag-area-dashed rounded-xl p-12 transition-all duration-300 cursor-pointer
-                    flex flex-col items-center justify-center gap-4
-                    hover:bg-[#151b2d]"
+                    flex flex-col items-center justify-center gap-4"
+             style="background-color: transparent"
              onclick="document.getElementById('images').click()">
 
-            <div class="w-16 h-16 rounded-full bg-[#23293c] flex items-center justify-center
-                        group-hover:scale-110 transition-transform duration-300">
-                <span class="material-symbols-outlined text-[#bdc2ff] text-3xl">cloud_upload</span>
+            <div class="w-16 h-16 rounded-full flex items-center justify-center
+                        transition-transform duration-300"
+                 style="background-color: var(--color-surface-container-high)">
+                <span class="material-symbols-outlined text-3xl"
+                      style="color: var(--color-primary)">cloud_upload</span>
             </div>
             <div class="text-center">
-                <p class="text-sm font-medium text-[#dce1fb]">Glisser-déposer des images</p>
-                <p class="font-[JetBrains_Mono] text-[11px] tracking-wider text-[#908f9e] mt-1 uppercase">
+                <p class="text-sm font-medium" style="color: var(--color-on-surface)">
+                    Glisser-déposer des images
+                </p>
+                <p class="font-[JetBrains_Mono] text-[11px] tracking-wider mt-1 uppercase"
+                   style="color: var(--color-outline)">
                     PNG, JPG ou WEBP — 4 Mo max
                 </p>
             </div>
 
-            {{-- Input caché --}}
-            <input type="file"
-                   id="images"
-                   name="images[]"
-                   accept="image/*"
-                   multiple
-                   class="hidden">
+            <input type="file" id="images" name="images[]" accept="image/*" multiple class="hidden">
         </div>
 
         {{-- Prévisualisation des images sélectionnées --}}
