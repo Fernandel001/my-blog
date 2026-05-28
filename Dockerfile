@@ -16,12 +16,8 @@ RUN composer install --no-dev --optimize-autoloader
 RUN npm install && npm run build
 
 RUN touch database/database.sqlite
-RUN php artisan key:generate --force
-RUN php artisan migrate --force
-RUN php artisan config:cache && php artisan route:cache && php artisan view:cache
-
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 8080
 
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+CMD ["sh", "-c", "php artisan key:generate --force && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan serve --host=0.0.0.0 --port=8080"]
