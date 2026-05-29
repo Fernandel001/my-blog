@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Notifications\OtpCodeNotification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
 class AuthController extends Controller
@@ -63,12 +63,40 @@ class AuthController extends Controller
             'otp_expires_at' => now()->addMinutes(15),
         ]);
 
-        $user->notify(new OtpCodeNotification($code));
+        $this->sendOtpViaBrevoApi($email, $code);
 
         // Stocker l'email en session pour la page de vérification
         $request->session()->put('otp_email', $email);
 
         return redirect()->route('otp.show');
+    }
+
+    // ──────────────────────────────────────────────
+    // Envoi du code OTP via l'API REST Brevo (port 443)
+    // ──────────────────────────────────────────────
+
+    private function sendOtpViaBrevoApi(string $to, string $code): void
+    {
+        $apiKey = config('services.brevo.key');
+
+        $payload = [
+            'sender'      => ['name' => 'The Hacker Experiment', 'email' => 'acc042001@smtp-brevo.com'],
+            'to'          => [['email' => $to]],
+            'subject'     => 'Votre code de connexion — The Hacker Experiment',
+            'htmlContent' => "
+                <p>Bonjour,</p>
+                <p>Voici votre code de connexion à 4 chiffres :</p>
+                <h2>{$code}</h2>
+                <p>Ce code est valable <strong>15 minutes</strong>.</p>
+                <p>Si vous n'avez pas demandé ce code, ignorez cet email.</p>
+                <p>— The Hacker Experiment</p>
+            ",
+        ];
+
+        Http::withHeaders([
+            'api-key'      => $apiKey,
+            'Content-Type' => 'application/json',
+        ])->post('https://api.brevo.com/v3/smtp/email', $payload);
     }
 
     // ──────────────────────────────────────────────
