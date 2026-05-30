@@ -93,10 +93,15 @@ class AuthController extends Controller
             ",
         ];
 
-        Http::withHeaders([
+        $response = Http::withHeaders([
             'api-key'      => $apiKey,
             'Content-Type' => 'application/json',
         ])->post('https://api.brevo.com/v3/smtp/email', $payload);
+
+        \Illuminate\Support\Facades\Log::info('Brevo API response', [
+            'status' => $response->status(),
+            'body'   => $response->body(),
+        ]);
     }
 
     // ──────────────────────────────────────────────
