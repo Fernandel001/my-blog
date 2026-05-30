@@ -80,7 +80,7 @@ class AuthController extends Controller
         $apiKey = config('services.brevo.key');
 
         $payload = [
-            'sender'      => ['name' => 'The Hacker Experiment', 'email' => 'acc042001@smtp-brevo.com'],
+            'sender'      => ['name' => 'The Hacker Experiment', 'email' => 'weriboni001@gmail.com'],
             'to'          => [['email' => $to]],
             'subject'     => 'Votre code de connexion — The Hacker Experiment',
             'htmlContent' => "
