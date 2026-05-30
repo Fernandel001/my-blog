@@ -98,10 +98,8 @@ class AuthController extends Controller
             'Content-Type' => 'application/json',
         ])->post('https://api.brevo.com/v3/smtp/email', $payload);
 
-        \Illuminate\Support\Facades\Log::info('Brevo API response', [
-            'status' => $response->status(),
-            'body'   => $response->body(),
-        ]);
+        error_log('Brevo API status: ' . $response->status());
+        error_log('Brevo API body: ' . $response->body());
     }
 
     // ──────────────────────────────────────────────
