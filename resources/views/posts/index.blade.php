@@ -26,7 +26,7 @@
                         A
                     </div>
                     <div class="flex flex-col">
-                        <span class="text-sm font-semibold" style="color: var(--color-on-surface)">Admin</span>
+                        <span class="text-sm font-semibold" style="color: var(--color-on-surface)">The Hacker Experiment</span>
                         <span class="text-[11px] font-[JetBrains_Mono] tracking-widest uppercase"
                               style="color: var(--color-outline)">
                             {{ $post->created_at->diffForHumans() }}
