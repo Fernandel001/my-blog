@@ -51,7 +51,18 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/dashboard', fn () => redirect()->route('home'))->name('dashboard');
 
-    // Gestion des posts
-    Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
-    Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+    // Gestion des posts — admin uniquement
+    Route::get('/posts/create', function () {
+        if (auth()->user()->email !== 'admin@thehackerexperiment.com') {
+            return redirect()->route('home');
+        }
+        return app(\App\Http\Controllers\PostController::class)->create();
+    })->name('posts.create');
+
+    Route::post('/posts', function (\Illuminate\Http\Request $request) {
+        if (auth()->user()->email !== 'admin@thehackerexperiment.com') {
+            return redirect()->route('home');
+        }
+        return app(\App\Http\Controllers\PostController::class)->store($request);
+    })->name('posts.store');
 });

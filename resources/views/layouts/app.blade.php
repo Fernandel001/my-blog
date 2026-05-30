@@ -99,7 +99,7 @@
                 <span>Feed</span>
             </a>
 
-            @auth
+            @if(auth()->user()?->email === 'admin@thehackerexperiment.com')
                 <a href="{{ route('admin.posts.create') }}"
                    class="flex items-center gap-3 py-3 px-4 rounded-lg font-medium transition-colors duration-200"
                    style="color: var(--color-on-surface-variant)"
@@ -108,7 +108,7 @@
                     <span class="material-symbols-outlined">add_circle</span>
                     <span>Nouveau post</span>
                 </a>
-            @endauth
+            @endif
         </div>
 
         {{-- Bas du drawer --}}
