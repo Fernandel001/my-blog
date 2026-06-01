@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\UploadImageToSupabase;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,8 +32,7 @@ class PostController extends Controller
     }
 
     /**
-     * Valide, crée le post, stocke les images localement
-     * et dispatch un Job asynchrone pour l'upload vers Supabase.
+     * Valide et enregistre un nouveau post avec upload synchrone vers Supabase.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -50,29 +48,28 @@ class PostController extends Controller
                 ->withErrors(['general' => 'Le post doit contenir au moins un texte ou une image.']);
         }
 
-        // 1. Créer le post en DB
         $post = Post::create([
             'content' => $request->input('content'),
         ]);
 
-        // 2. Pour chaque image : stockage local temporaire + entrée DB + dispatch du job
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                // Stockage local temporaire (immédiat, pas de réseau)
-                $tempPath = $image->store('temp', 'local');
+                $extension   = $image->getClientOriginalExtension();
+                $supabasePath = 'posts/' . uniqid() . '.' . $extension;
 
-                // Entrée en DB avec chemin temporaire (sera mis à jour par le job)
-                $postImage = $post->images()->create([
-                    'image_path' => $tempPath,
+                Storage::disk('supabase')->put(
+                    $supabasePath,
+                    file_get_contents($image->getRealPath())
+                );
+
+                $post->images()->create([
+                    'image_path' => $supabasePath,
                 ]);
-
-                // Dispatch du job asynchrone pour l'upload vers Supabase
-                UploadImageToSupabase::dispatch($postImage->id, $tempPath);
             }
         }
 
         return redirect()
             ->route('home')
-            ->with('success', 'Post publié. Les images sont en cours d\'upload.');
+            ->with('success', 'Post publié.');
     }
 }
