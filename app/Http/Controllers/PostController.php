@@ -54,13 +54,18 @@ class PostController extends Controller
 
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
-                $extension   = $image->getClientOriginalExtension();
+                $extension    = $image->getClientOriginalExtension();
                 $supabasePath = 'posts/' . uniqid() . '.' . $extension;
 
-                Storage::disk('supabase')->put(
-                    $supabasePath,
-                    file_get_contents($image->getRealPath())
-                );
+                try {
+                    $result = Storage::disk('supabase')->put(
+                        $supabasePath,
+                        file_get_contents($image->getRealPath())
+                    );
+                    error_log('Supabase upload result: ' . ($result ? 'true' : 'false') . ' path: ' . $supabasePath);
+                } catch (\Exception $e) {
+                    error_log('Supabase upload error: ' . $e->getMessage());
+                }
 
                 $post->images()->create([
                     'image_path' => $supabasePath,
