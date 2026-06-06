@@ -19,6 +19,10 @@ Route::post('/posts/{post}/comments', [CommentController::class, 'store'])
     ->middleware('auth')
     ->name('posts.comments.store');
 
+Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('comments.destroy');
+
 // Likes — réservés aux utilisateurs connectés
 Route::post('/posts/{post}/like', [LikeController::class, 'toggle'])
     ->middleware('auth')

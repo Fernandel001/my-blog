@@ -171,30 +171,100 @@
                     @if ($post->comments->count() > 0)
                         <div class="px-6 pt-4 pb-2 space-y-4">
                             @foreach ($post->comments as $comment)
-                                <div class="flex gap-3">
-                                    <div class="shrink-0 w-8 h-8 rounded-full flex items-center
-                                                justify-center text-xs font-bold font-[JetBrains_Mono] uppercase"
-                                         style="background-color: var(--color-surface-container-high);
-                                                color: var(--color-primary)">
-                                        {{ mb_substr($comment->user->name, 0, 1) }}
-                                    </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-baseline gap-2">
-                                            <span class="text-sm font-semibold"
-                                                  style="color: var(--color-on-surface)">
-                                                {{ $comment->user->name }}
-                                            </span>
-                                            <span class="text-[10px] font-[JetBrains_Mono] tracking-wider uppercase"
-                                                  style="color: var(--color-outline)">
-                                                {{ $comment->created_at->diffForHumans() }}
-                                            </span>
+                                @auth
+                                    @if(auth()->user()->email === 'admin@thehackerexperiment.com' || auth()->user()->id === $comment->user_id)
+                                        <div class="relative group flex gap-3">
+                                            <div class="shrink-0 w-8 h-8 rounded-full flex items-center
+                                                        justify-center text-xs font-bold font-[JetBrains_Mono] uppercase"
+                                                 style="background-color: var(--color-surface-container-high);
+                                                        color: var(--color-primary)">
+                                                {{ mb_substr($comment->user->name, 0, 1) }}
+                                            </div>
+                                            <div class="flex-1">
+                                                <div class="flex items-baseline gap-2">
+                                                    <span class="text-sm font-semibold"
+                                                          style="color: var(--color-on-surface)">
+                                                        {{ $comment->user->name }}
+                                                    </span>
+                                                    <span class="text-[10px] font-[JetBrains_Mono] tracking-wider uppercase"
+                                                          style="color: var(--color-outline)">
+                                                        {{ $comment->created_at->diffForHumans() }}
+                                                    </span>
+                                                </div>
+                                                <p class="mt-0.5 text-sm leading-relaxed"
+                                                   style="color: var(--color-on-surface-variant)">
+                                                    {{ $comment->content }}
+                                                </p>
+                                            </div>
+                                            {{-- Bouton supprimer visible au hover --}}
+                                            <form method="POST"
+                                                  action="{{ route('comments.destroy', $comment) }}"
+                                                  class="absolute top-0 right-0 hidden group-hover:block">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
+                                                        onclick="return confirm('Supprimer ce commentaire ?')"
+                                                        class="text-xs font-[JetBrains_Mono] tracking-widest uppercase px-3 py-1 rounded-full transition-colors"
+                                                        style="background-color: var(--color-surface-container-high);
+                                                               color: var(--color-outline)"
+                                                        onmouseover="this.style.color='var(--color-error)'"
+                                                        onmouseout="this.style.color='var(--color-outline)'">
+                                                    Supprimer
+                                                </button>
+                                            </form>
                                         </div>
-                                        <p class="mt-0.5 text-sm leading-relaxed"
-                                           style="color: var(--color-on-surface-variant)">
-                                            {{ $comment->content }}
-                                        </p>
+                                    @else
+                                        <div class="flex gap-3">
+                                            <div class="shrink-0 w-8 h-8 rounded-full flex items-center
+                                                        justify-center text-xs font-bold font-[JetBrains_Mono] uppercase"
+                                                 style="background-color: var(--color-surface-container-high);
+                                                        color: var(--color-primary)">
+                                                {{ mb_substr($comment->user->name, 0, 1) }}
+                                            </div>
+                                            <div class="flex-1">
+                                                <div class="flex items-baseline gap-2">
+                                                    <span class="text-sm font-semibold"
+                                                          style="color: var(--color-on-surface)">
+                                                        {{ $comment->user->name }}
+                                                    </span>
+                                                    <span class="text-[10px] font-[JetBrains_Mono] tracking-wider uppercase"
+                                                          style="color: var(--color-outline)">
+                                                        {{ $comment->created_at->diffForHumans() }}
+                                                    </span>
+                                                </div>
+                                                <p class="mt-0.5 text-sm leading-relaxed"
+                                                   style="color: var(--color-on-surface-variant)">
+                                                    {{ $comment->content }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @else
+                                    <div class="flex gap-3">
+                                        <div class="shrink-0 w-8 h-8 rounded-full flex items-center
+                                                    justify-center text-xs font-bold font-[JetBrains_Mono] uppercase"
+                                             style="background-color: var(--color-surface-container-high);
+                                                    color: var(--color-primary)">
+                                            {{ mb_substr($comment->user->name, 0, 1) }}
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-baseline gap-2">
+                                                <span class="text-sm font-semibold"
+                                                      style="color: var(--color-on-surface)">
+                                                    {{ $comment->user->name }}
+                                                </span>
+                                                <span class="text-[10px] font-[JetBrains_Mono] tracking-wider uppercase"
+                                                      style="color: var(--color-outline)">
+                                                    {{ $comment->created_at->diffForHumans() }}
+                                                </span>
+                                            </div>
+                                            <p class="mt-0.5 text-sm leading-relaxed"
+                                               style="color: var(--color-on-surface-variant)">
+                                                {{ $comment->content }}
+                                            </p>
+                                        </div>
                                     </div>
-                                </div>
+                                @endauth
                             @endforeach
                         </div>
                     @endif
