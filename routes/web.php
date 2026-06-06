@@ -23,6 +23,10 @@ Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
     ->middleware('auth')
     ->name('comments.destroy');
 
+Route::patch('/comments/{comment}', [CommentController::class, 'update'])
+    ->middleware('auth')
+    ->name('comments.update');
+
 // Likes — réservés aux utilisateurs connectés
 Route::post('/posts/{post}/like', [LikeController::class, 'toggle'])
     ->middleware('auth')

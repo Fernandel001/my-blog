@@ -43,4 +43,22 @@ class CommentController extends Controller
 
         return back();
     }
+
+    /**
+     * Modifie un commentaire — auteur uniquement, dans les 3 jours.
+     */
+    public function update(Request $request, Comment $comment): RedirectResponse
+    {
+        if (auth()->id() !== $comment->user_id) abort(403);
+
+        if ($comment->created_at->diffInDays(now()) > 3) {
+            return back()->withErrors(['edit' => 'Délai de modification dépassé.']);
+        }
+
+        $request->validate(['content' => ['required', 'string', 'max:1000']]);
+
+        $comment->update(['content' => $request->input('content')]);
+
+        return back();
+    }
 }

@@ -173,6 +173,7 @@
                             @foreach ($post->comments as $comment)
                                 @auth
                                     @if(auth()->user()->email === 'admin@thehackerexperiment.com' || auth()->user()->id === $comment->user_id)
+                                        @php $canEdit = auth()->id() === $comment->user_id && $comment->created_at->diffInDays(now()) <= 3; @endphp
                                         <div class="relative group flex gap-3">
                                             <div class="shrink-0 w-8 h-8 rounded-full flex items-center
                                                         justify-center text-xs font-bold font-[JetBrains_Mono] uppercase"
@@ -191,27 +192,70 @@
                                                         {{ $comment->created_at->diffForHumans() }}
                                                     </span>
                                                 </div>
-                                                <p class="mt-0.5 text-sm leading-relaxed"
+
+                                                {{-- Texte du commentaire --}}
+                                                <p class="comment-text mt-0.5 text-sm leading-relaxed"
                                                    style="color: var(--color-on-surface-variant)">
                                                     {{ $comment->content }}
                                                 </p>
+
+                                                {{-- Formulaire d'édition inline — masqué par défaut --}}
+                                                @if($canEdit)
+                                                    <form method="POST"
+                                                          action="{{ route('comments.update', $comment) }}"
+                                                          class="comment-edit-form mt-2 hidden">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <textarea name="content"
+                                                                  rows="2"
+                                                                  class="w-full rounded-xl px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 transition-all"
+                                                                  style="background-color: var(--color-surface-container-lowest);
+                                                                         border: 1px solid var(--color-outline-variant);
+                                                                         color: var(--color-on-surface)"
+                                                                  onfocus="this.style.borderColor='var(--color-primary-container)'"
+                                                                  onblur="this.style.borderColor='var(--color-outline-variant)'">{{ $comment->content }}</textarea>
+                                                        <div class="flex gap-2 mt-2">
+                                                            <button type="submit"
+                                                                    class="gradient-btn px-4 py-1 rounded-full text-white text-xs
+                                                                           font-[JetBrains_Mono] tracking-widest uppercase
+                                                                           hover:scale-105 active:scale-95 transition-all">
+                                                                Sauvegarder
+                                                            </button>
+                                                            <button type="button"
+                                                                    class="comment-cancel-edit text-xs font-[JetBrains_Mono] tracking-widest uppercase px-4 py-1 rounded-full transition-colors"
+                                                                    style="background-color: var(--color-surface-container-high); color: var(--color-outline)">
+                                                                Annuler
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                @endif
                                             </div>
-                                            {{-- Bouton supprimer visible au hover --}}
-                                            <form method="POST"
-                                                  action="{{ route('comments.destroy', $comment) }}"
-                                                  class="absolute top-0 right-0 hidden group-hover:block">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit"
-                                                        onclick="return confirm('Supprimer ce commentaire ?')"
-                                                        class="text-xs font-[JetBrains_Mono] tracking-widest uppercase px-3 py-1 rounded-full transition-colors"
-                                                        style="background-color: var(--color-surface-container-high);
-                                                               color: var(--color-outline)"
-                                                        onmouseover="this.style.color='var(--color-error)'"
-                                                        onmouseout="this.style.color='var(--color-outline)'">
-                                                    Supprimer
-                                                </button>
-                                            </form>
+
+                                            {{-- Boutons d'action visibles au hover --}}
+                                            <div class="absolute top-0 right-0 hidden group-hover:flex gap-1">
+                                                @if($canEdit)
+                                                    <button type="button"
+                                                            class="comment-edit-btn text-xs font-[JetBrains_Mono] tracking-widest uppercase px-3 py-1 rounded-full transition-colors"
+                                                            style="background-color: var(--color-surface-container-high); color: var(--color-outline)"
+                                                            onmouseover="this.style.color='var(--color-primary)'"
+                                                            onmouseout="this.style.color='var(--color-outline)'">
+                                                        Modifier
+                                                    </button>
+                                                @endif
+                                                <form method="POST"
+                                                      action="{{ route('comments.destroy', $comment) }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            onclick="return confirm('Supprimer ce commentaire ?')"
+                                                            class="text-xs font-[JetBrains_Mono] tracking-widest uppercase px-3 py-1 rounded-full transition-colors"
+                                                            style="background-color: var(--color-surface-container-high); color: var(--color-outline)"
+                                                            onmouseover="this.style.color='var(--color-error)'"
+                                                            onmouseout="this.style.color='var(--color-outline)'">
+                                                        Supprimer
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
                                     @else
                                         <div class="flex gap-3">
@@ -363,7 +407,24 @@
         });
     });
 
-    // ── Accordéon commentaires ──
+    // ── Édition inline de commentaire ──
+    document.querySelectorAll('.comment-edit-btn').forEach(btn => {
+        const wrapper  = btn.closest('.relative');
+        const textEl   = wrapper.querySelector('.comment-text');
+        const editForm = wrapper.querySelector('.comment-edit-form');
+        const cancelBtn = wrapper.querySelector('.comment-cancel-edit');
+
+        btn.addEventListener('click', () => {
+            textEl.classList.add('hidden');
+            editForm.classList.remove('hidden');
+            editForm.querySelector('textarea').focus();
+        });
+
+        cancelBtn?.addEventListener('click', () => {
+            editForm.classList.add('hidden');
+            textEl.classList.remove('hidden');
+        });
+    });
     document.querySelectorAll('[data-comments-toggle]').forEach(btn => {
         const article = btn.closest('article');
         const target  = article.querySelector('[data-comments-target]');
