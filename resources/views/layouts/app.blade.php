@@ -33,10 +33,19 @@
 
             {{-- Logo --}}
             <a href="{{ route('home') }}"
-               class="font-[Geist] text-2xl font-bold tracking-tighter transition-colors duration-300"
-               style="color: var(--color-primary)">
-                {{ config('app.name', 'Mon Blog') }}
-            </a>
+                class="flex flex-col transition-colors duration-300">
+                    <span class="font-[Geist] text-2xl font-bold tracking-tighter"
+                        style="color: var(--color-primary)">
+                        {{ config('app.name', 'Mon Blog') }}
+                    </span>
+                    <span class="text-[9px] font-[JetBrains_Mono] tracking-widest uppercase"
+                        style="color: var(--color-outline)">
+                        par <a href="https://github.com/Fernandel001?tab=repositories&q=&type=&language=&sort=name"
+                            target="_blank"
+                            class="hover:underline underline-offset-2"
+                            style="color: var(--color-primary)">Fernandel001</a> · BONI Wéri N'doissi
+                    </span>
+                </a>
 
             <div class="flex items-center gap-2">
                 {{-- Bouton toggle thème --}}
