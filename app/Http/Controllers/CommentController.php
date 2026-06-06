@@ -19,8 +19,9 @@ class CommentController extends Controller
         ]);
 
         $post->comments()->create([
-            'user_id' => auth()->id(),
-            'content' => $request->input('content'),
+            'user_id'   => auth()->id(),
+            'content'   => $request->input('content'),
+            'parent_id' => $request->input('parent_id'),
         ]);
 
         return redirect()

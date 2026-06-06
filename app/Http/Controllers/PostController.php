@@ -15,7 +15,9 @@ class PostController extends Controller
      */
     public function index(): View
     {
-        $posts = Post::with(['images', 'comments.user', 'likes'])
+        $posts = Post::with(['images', 'comments' => function ($q) {
+                $q->whereNull('parent_id')->with(['user', 'replies.user']);
+            }, 'likes'])
             ->withCount('likes')
             ->latest()
             ->get();
