@@ -35,6 +35,16 @@
                 </div>
             </div>
 
+            {{-- ── Titre ── --}}
+            @if ($post->title)
+                <div class="px-6 pb-2">
+                    <h2 class="text-2xl font-bold leading-tight"
+                        style="color: var(--color-on-surface)">
+                        {{ $post->title }}
+                    </h2>
+                </div>
+            @endif
+
             {{-- ── Texte ── --}}
             @if ($post->content)
                 <div class="px-6 pb-4 text-[17px] leading-relaxed whitespace-pre-line"

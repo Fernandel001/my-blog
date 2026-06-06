@@ -37,18 +37,20 @@ class PostController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
+            'title'    => ['nullable', 'string', 'max:255'],
             'content'  => ['nullable', 'string'],
             'images'   => ['nullable', 'array'],
             'images.*' => ['image', 'max:4096'],
         ]);
 
-        if (empty($request->input('content')) && ! $request->hasFile('images')) {
+        if (empty($request->input('title')) && empty($request->input('content')) && ! $request->hasFile('images')) {
             return back()
                 ->withInput()
-                ->withErrors(['general' => 'Le post doit contenir au moins un texte ou une image.']);
+                ->withErrors(['general' => 'Le post doit contenir au moins un titre, un texte ou une image.']);
         }
 
         $post = Post::create([
+            'title'   => $request->input('title'),
             'content' => $request->input('content'),
         ]);
 

@@ -41,6 +41,20 @@
           class="space-y-8">
         @csrf
 
+        {{-- ── Titre (optionnel) ── --}}
+        <div class="relative border-b pb-4" style="border-color: var(--color-outline-variant)">
+            <input type="text"
+                   id="title"
+                   name="title"
+                   value="{{ old('title') }}"
+                   placeholder="Titre du post…"
+                   class="w-full border-none focus:ring-0 focus:outline-none
+                          text-2xl font-bold leading-tight p-0"
+                   style="background: transparent;
+                          color: var(--color-on-surface);
+                          caret-color: var(--color-primary)">
+        </div>
+
         {{-- ── Zone de texte ── --}}
         <div class="relative">
             <textarea id="content"
