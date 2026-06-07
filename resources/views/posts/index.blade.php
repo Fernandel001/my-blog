@@ -275,20 +275,84 @@
                                 @if ($comment->replies->count() > 0)
                                     <div class="ml-10 mt-3 space-y-3 pl-4" style="border-left: 2px solid var(--color-outline-variant)">
                                         @foreach ($comment->replies as $reply)
-                                            <div class="flex gap-3">
-                                                <div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold font-[JetBrains_Mono] uppercase" style="background-color: var(--color-surface-container-high); color: var(--color-primary)">{{ mb_substr($reply->user->name, 0, 1) }}</div>
+                                            @php
+                                                $canEditReply = auth()->check()
+                                                    && auth()->id() === $reply->user_id
+                                                    && $reply->created_at->diffInDays(now()) <= 3;
+                                                $canActOnReply = auth()->check()
+                                                    && (auth()->user()->email === 'admin@thehackerexperiment.com'
+                                                        || auth()->id() === $reply->user_id);
+                                            @endphp
+
+                                            <div class="relative group flex gap-3">
+                                                <div class="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold font-[JetBrains_Mono] uppercase"
+                                                     style="background-color: var(--color-surface-container-high); color: var(--color-primary)">
+                                                    {{ mb_substr($reply->user->name, 0, 1) }}
+                                                </div>
                                                 <div class="flex-1">
                                                     <div class="flex items-baseline gap-2">
                                                         <span class="text-sm font-semibold" style="color: var(--color-on-surface)">{{ $reply->user->name }}</span>
                                                         <span class="text-[10px] font-[JetBrains_Mono] tracking-wider uppercase" style="color: var(--color-outline)">{{ $reply->created_at->diffForHumans() }}</span>
                                                     </div>
-                                                    <p class="mt-0.5 text-sm leading-relaxed" style="color: var(--color-on-surface-variant)">{{ $reply->content }}</p>
+
+                                                    {{-- Texte de la réponse --}}
+                                                    <p class="reply-text mt-0.5 text-sm leading-relaxed" style="color: var(--color-on-surface-variant)">{{ $reply->content }}</p>
+
+                                                    {{-- Formulaire édition inline reply --}}
+                                                    @if($canEditReply)
+                                                        <form method="POST" action="{{ route('comments.update', $reply) }}" class="reply-edit-form mt-2 hidden">
+                                                            @csrf @method('PATCH')
+                                                            <textarea name="content" rows="2"
+                                                                      class="w-full rounded-xl px-3 py-2 text-sm resize-none focus:outline-none"
+                                                                      style="background-color: var(--color-surface-container-lowest); border: 1px solid var(--color-outline-variant); color: var(--color-on-surface)"
+                                                                      onfocus="this.style.borderColor='var(--color-primary-container)'"
+                                                                      onblur="this.style.borderColor='var(--color-outline-variant)'">{{ $reply->content }}</textarea>
+                                                            <div class="flex gap-2 mt-2">
+                                                                <button type="submit" class="gradient-btn px-4 py-1 rounded-full text-white text-xs font-[JetBrains_Mono] tracking-widest uppercase hover:scale-105 active:scale-95 transition-all">Sauvegarder</button>
+                                                                <button type="button" class="reply-cancel-edit text-xs font-[JetBrains_Mono] tracking-widest uppercase px-4 py-1 rounded-full"
+                                                                        style="background-color: var(--color-surface-container-high); color: var(--color-outline)">Annuler</button>
+                                                            </div>
+                                                        </form>
+                                                    @endif
+
+                                                    {{-- Bouton Répondre --}}
+                                                    @auth
+                                                        <div class="hidden group-hover:block mt-1">
+                                                            <button class="reply-btn text-[10px] font-[JetBrains_Mono] tracking-widest uppercase transition-colors"
+                                                                    style="color: var(--color-outline)"
+                                                                    data-comment-id="{{ $comment->id }}"
+                                                                    onmouseover="this.style.color='var(--color-primary)'"
+                                                                    onmouseout="this.style.color='var(--color-outline)'">
+                                                                Répondre
+                                                            </button>
+                                                        </div>
+                                                    @endauth
                                                 </div>
-                                                @if(auth()->check() && (auth()->user()->email === 'admin@thehackerexperiment.com' || auth()->id() === $reply->user_id))
-                                                    <form method="POST" action="{{ route('comments.destroy', $reply) }}" class="self-start">
-                                                        @csrf @method('DELETE')
-                                                        <button type="submit" onclick="return confirm('Supprimer ?')" class="text-[10px] font-[JetBrains_Mono] uppercase px-2 py-0.5 rounded-full transition-colors" style="color: var(--color-outline)" onmouseover="this.style.color='var(--color-error)'" onmouseout="this.style.color='var(--color-outline)'">×</button>
-                                                    </form>
+
+                                                {{-- Boutons Modifier / Supprimer au hover --}}
+                                                @if($canActOnReply)
+                                                    <div class="absolute top-0 right-0 hidden group-hover:flex gap-1">
+                                                        @if($canEditReply)
+                                                            <button type="button"
+                                                                    class="reply-edit-btn text-xs font-[JetBrains_Mono] tracking-widest uppercase px-3 py-1 rounded-full transition-colors"
+                                                                    style="background-color: var(--color-surface-container-high); color: var(--color-outline)"
+                                                                    onmouseover="this.style.color='var(--color-primary)'"
+                                                                    onmouseout="this.style.color='var(--color-outline)'">
+                                                                Modifier
+                                                            </button>
+                                                        @endif
+                                                        <form method="POST" action="{{ route('comments.destroy', $reply) }}">
+                                                            @csrf @method('DELETE')
+                                                            <button type="submit"
+                                                                    onclick="return confirm('Supprimer cette réponse ?')"
+                                                                    class="text-xs font-[JetBrains_Mono] tracking-widest uppercase px-3 py-1 rounded-full transition-colors"
+                                                                    style="background-color: var(--color-surface-container-high); color: var(--color-outline)"
+                                                                    onmouseover="this.style.color='var(--color-error)'"
+                                                                    onmouseout="this.style.color='var(--color-outline)'">
+                                                                Supprimer
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 @endif
                                             </div>
                                         @endforeach
@@ -414,10 +478,41 @@
 
     // ── Édition inline de commentaire ──
     document.querySelectorAll('.comment-edit-btn').forEach(btn => {
-        const wrapper  = btn.closest('.relative');
-        const textEl   = wrapper.querySelector('.comment-text');
-        const editForm = wrapper.querySelector('.comment-edit-form');
+        const wrapper   = btn.closest('.relative');
+        const textEl    = wrapper.querySelector('.comment-text');
+        const editForm  = wrapper.querySelector('.comment-edit-form');
         const cancelBtn = wrapper.querySelector('.comment-cancel-edit');
+
+        btn.addEventListener('click', () => {
+            textEl.classList.add('hidden');
+            editForm.classList.remove('hidden');
+            editForm.querySelector('textarea').focus();
+        });
+
+        cancelBtn?.addEventListener('click', () => {
+            editForm.classList.add('hidden');
+            textEl.classList.remove('hidden');
+        });
+    });
+
+    // ── Édition inline de reply ──
+    document.querySelectorAll('.reply-edit-btn').forEach(btn => {
+        const wrapper   = btn.closest('.relative');
+        const textEl    = wrapper.querySelector('.reply-text');
+        const editForm  = wrapper.querySelector('.reply-edit-form');
+        const cancelBtn = wrapper.querySelector('.reply-cancel-edit');
+
+        btn.addEventListener('click', () => {
+            textEl.classList.add('hidden');
+            editForm.classList.remove('hidden');
+            editForm.querySelector('textarea').focus();
+        });
+
+        cancelBtn?.addEventListener('click', () => {
+            editForm.classList.add('hidden');
+            textEl.classList.remove('hidden');
+        });
+    });;
 
         btn.addEventListener('click', () => {
             textEl.classList.add('hidden');
