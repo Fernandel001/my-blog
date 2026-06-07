@@ -40,10 +40,7 @@
                     </span>
                     <span class="text-[9px] font-[JetBrains_Mono] tracking-widest uppercase"
                         style="color: var(--color-outline)">
-                        par <a href="www.linkedin.com/in/fernandel-boni-73379b341"
-                            target="_blank"
-                            class="hover:underline underline-offset-2"
-                            style="color: var(--color-primary)">Fernandel BONI</a> · BONI Wéri N'doissi
+                        par  BONI Wéri N'doissi
                     </span>
                 </a>
 
