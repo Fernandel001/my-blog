@@ -40,10 +40,10 @@
                     </span>
                     <span class="text-[9px] font-[JetBrains_Mono] tracking-widest uppercase"
                         style="color: var(--color-outline)">
-                        par <a href="https://github.com/Fernandel001?tab=repositories&q=&type=&language=&sort=name"
+                        par <a href="https://www.linkedin.com/in/fernandel-boni"
                             target="_blank"
                             class="hover:underline underline-offset-2"
-                            style="color: var(--color-primary)">Fernandel001</a> · BONI Wéri N'doissi
+                            style="color: var(--color-primary)">Fernandel BONI</a> · BONI Wéri N'doissi
                     </span>
                 </a>
 
