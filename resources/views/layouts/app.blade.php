@@ -102,7 +102,7 @@
                onmouseover="this.style.backgroundColor='var(--color-surface-bright)';this.style.color='var(--color-primary)'"
                onmouseout="this.style.backgroundColor='';this.style.color='var(--color-on-surface-variant)'">
                 <span class="material-symbols-outlined">dynamic_feed</span>
-                <span>Feed</span>
+                <span>Actualités</span>
             </a>
 
             @if(auth()->user()?->email === 'admin@thehackerexperiment.com')
